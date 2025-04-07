@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { BudgetOverview } from "@/components/budget/BudgetOverview";
 import { BudgetCategories } from "@/components/budget/BudgetCategories";

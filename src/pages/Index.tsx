@@ -1,13 +1,38 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { Layout } from "@/components/layout/Layout";
+import { WelcomeCard } from "@/components/dashboard/WelcomeCard";
+import { StatsGrid } from "@/components/dashboard/StatsGrid";
+import { AlertsSection } from "@/components/dashboard/AlertsSection";
+import { SpendingChart } from "@/components/dashboard/SpendingChart";
+import { MonthlyTrend } from "@/components/dashboard/MonthlyTrend";
+import { AIInsights } from "@/components/dashboard/AIInsights";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <Layout>
+      <div className="space-y-8 animate-fade-in">
+        <WelcomeCard />
+        
+        <div className="space-y-6">
+          <h2 className="text-xl font-bold tracking-tight">Financial Overview</h2>
+          <StatsGrid />
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <SpendingChart />
+          <MonthlyTrend />
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <AlertsSection />
+          </div>
+          <div>
+            <AIInsights />
+          </div>
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

@@ -1,5 +1,6 @@
 
-import { Link } from "react-router-dom";
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   BarChart3,
   BookOpen,
@@ -35,8 +36,8 @@ const SidebarItem = ({ icon: Icon, label, href, isActive }: SidebarItemProps) =>
 };
 
 export const Sidebar = () => {
-  // In a real app, this would come from your current route
-  const currentPath = "/";
+  const location = useLocation();
+  const currentPath = location.pathname;
 
   const menuItems = [
     { icon: Home, label: "Dashboard", href: "/" },

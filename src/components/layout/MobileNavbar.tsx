@@ -1,8 +1,9 @@
 
+import React from "react";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   BarChart3,
   BookOpen,
@@ -15,8 +16,8 @@ import {
 } from "lucide-react";
 
 export const MobileNavbar = () => {
-  // In a real app, this would come from your current route
-  const currentPath = "/";
+  const location = useLocation();
+  const currentPath = location.pathname;
 
   const menuItems = [
     { icon: Home, label: "Dashboard", href: "/" },

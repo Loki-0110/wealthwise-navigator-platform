@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
@@ -13,7 +12,6 @@ import {
   CreditCard, 
   Building, 
   PiggyBank, 
-  LineChart, 
   Plus, 
   ArrowUp, 
   ArrowDown, 
@@ -28,7 +26,6 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-// Mock data for accounts
 const bankAccounts = [
   {
     id: "bank-1",
@@ -223,7 +220,7 @@ export default function Accounts() {
               <span>Credit Cards</span>
             </TabsTrigger>
             <TabsTrigger value="investments" className="flex gap-2">
-              <LineChart size={16} />
+              <LineChartIcon size={16} />
               <span>Investments</span>
             </TabsTrigger>
           </TabsList>
@@ -411,21 +408,21 @@ export default function Accounts() {
                               <span>Stocks</span>
                               <span>{investment.allocation.stocks}%</span>
                             </div>
-                            <Progress value={investment.allocation.stocks} className="h-2 bg-slate-200" indicatorClassName="bg-blue-600" />
+                            <Progress value={investment.allocation.stocks} className="h-2 bg-slate-200" />
                           </div>
                           <div>
                             <div className="flex justify-between text-sm mb-1">
                               <span>Bonds</span>
                               <span>{investment.allocation.bonds}%</span>
                             </div>
-                            <Progress value={investment.allocation.bonds} className="h-2 bg-slate-200" indicatorClassName="bg-amber-600" />
+                            <Progress value={investment.allocation.bonds} className="h-2 bg-slate-200" />
                           </div>
                           <div>
                             <div className="flex justify-between text-sm mb-1">
                               <span>Cash</span>
                               <span>{investment.allocation.cash}%</span>
                             </div>
-                            <Progress value={investment.allocation.cash} className="h-2 bg-slate-200" indicatorClassName="bg-green-600" />
+                            <Progress value={investment.allocation.cash} className="h-2 bg-slate-200" />
                           </div>
                         </div>
                       </div>

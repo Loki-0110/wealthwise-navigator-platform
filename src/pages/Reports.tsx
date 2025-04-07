@@ -28,7 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { LineChart, Line, BarChart as ReBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, BarChart as ReBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { toast } from "sonner";
 
 // Mock data for reports
@@ -116,7 +116,7 @@ export default function Reports() {
       case 'pdf':
         return <Badge variant="destructive">PDF</Badge>;
       case 'excel':
-        return <Badge variant="success" className="bg-green-600">Excel</Badge>;
+        return <Badge variant="secondary" className="bg-green-600">Excel</Badge>;
       default:
         return <Badge variant="outline">{format.toUpperCase()}</Badge>;
     }

@@ -50,7 +50,7 @@ export const Sidebar = () => {
   ];
 
   return (
-    <div className="hidden md:flex flex-col w-64 bg-finance-blue-dark h-screen">
+    <div className="hidden md:flex flex-col w-64 bg-finance-blue-dark h-full min-h-screen fixed left-0 top-0">
       <div className="p-4 border-b border-white/10">
         <h2 className="text-white font-medium text-lg">Financial Dashboard</h2>
       </div>

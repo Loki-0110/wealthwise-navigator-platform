@@ -27,9 +27,12 @@ export const SignUpForm = () => {
   };
 
   const validateEmail = (email: string) => {
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    // More comprehensive email validation
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    return emailRegex.test(email) && 
+           email.length <= 254 && 
+           email.split('@')[0].length <= 64 && 
+           email.split('@')[1].length <= 253;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
@@ -6,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { FiLock, FiMail } from "lucide-react";
+import { Mail, FileLock } from "lucide-react";
 
 export const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -31,7 +30,7 @@ export const LoginForm = () => {
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <div className="relative">
-              <FiMail className="absolute left-3 top-3 text-gray-400" />
+              <Mail className="absolute left-3 top-3 text-gray-400" />
               <Input
                 id="email"
                 type="email"
@@ -51,7 +50,7 @@ export const LoginForm = () => {
               </Link>
             </div>
             <div className="relative">
-              <FiLock className="absolute left-3 top-3 text-gray-400" />
+              <FileLock className="absolute left-3 top-3 text-gray-400" />
               <Input
                 id="password"
                 type="password"

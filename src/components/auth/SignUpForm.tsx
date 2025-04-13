@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
@@ -6,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { FiLock, FiMail, FiUser } from "lucide-react";
+import { Mail, FileLock, User } from "lucide-react";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -60,7 +59,7 @@ export const SignUpForm = () => {
           <div className="space-y-2">
             <Label htmlFor="fullName">Full Name</Label>
             <div className="relative">
-              <FiUser className="absolute left-3 top-3 text-gray-400" />
+              <User className="absolute left-3 top-3 text-gray-400" />
               <Input
                 id="fullName"
                 type="text"
@@ -75,7 +74,7 @@ export const SignUpForm = () => {
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <div className="relative">
-              <FiMail className="absolute left-3 top-3 text-gray-400" />
+              <Mail className="absolute left-3 top-3 text-gray-400" />
               <Input
                 id="email"
                 type="email"
@@ -90,7 +89,7 @@ export const SignUpForm = () => {
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <div className="relative">
-              <FiLock className="absolute left-3 top-3 text-gray-400" />
+              <FileLock className="absolute left-3 top-3 text-gray-400" />
               <Input
                 id="password"
                 type="password"
@@ -108,7 +107,7 @@ export const SignUpForm = () => {
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Confirm Password</Label>
             <div className="relative">
-              <FiLock className="absolute left-3 top-3 text-gray-400" />
+              <FileLock className="absolute left-3 top-3 text-gray-400" />
               <Input
                 id="confirmPassword"
                 type="password"

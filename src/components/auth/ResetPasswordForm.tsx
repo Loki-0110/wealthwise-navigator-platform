@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
@@ -6,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FiLock } from "lucide-react";
+import { FileLock } from "lucide-react";
 import { toast } from "sonner";
 
 export const ResetPasswordForm = () => {
@@ -81,7 +80,7 @@ export const ResetPasswordForm = () => {
           <div className="space-y-2">
             <Label htmlFor="password">New Password</Label>
             <div className="relative">
-              <FiLock className="absolute left-3 top-3 text-gray-400" />
+              <FileLock className="absolute left-3 top-3 text-gray-400" />
               <Input
                 id="password"
                 type="password"
@@ -99,7 +98,7 @@ export const ResetPasswordForm = () => {
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Confirm New Password</Label>
             <div className="relative">
-              <FiLock className="absolute left-3 top-3 text-gray-400" />
+              <FileLock className="absolute left-3 top-3 text-gray-400" />
               <Input
                 id="confirmPassword"
                 type="password"

@@ -12,9 +12,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const Navbar = () => {
-  const isLoggedIn = false; // This will be connected to authentication state later
+  const { user, signOut } = useAuth();
+  const isLoggedIn = !!user;
+
+  // Get user initials for avatar
+  const getUserInitials = () => {
+    if (!user || !user.email) return "U";
+    return user.email.substring(0, 1).toUpperCase();
+  };
+
+  // Get user display name
+  const getUserDisplayName = () => {
+    if (!user) return "";
+    if (user.user_metadata?.full_name) return user.user_metadata.full_name;
+    return user.email?.split('@')[0] || "User";
+  };
 
   return (
     <nav className="h-16 border-b bg-white flex items-center px-4 justify-between w-full">
@@ -41,10 +56,10 @@ export const Navbar = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src="/placeholder.svg" />
-                    <AvatarFallback className="bg-finance-blue text-white">JD</AvatarFallback>
+                    <AvatarImage src={user.user_metadata?.avatar_url || ""} />
+                    <AvatarFallback className="bg-finance-blue text-white">{getUserInitials()}</AvatarFallback>
                   </Avatar>
-                  <span className="hidden sm:inline-block">John Doe</span>
+                  <span className="hidden sm:inline-block">{getUserDisplayName()}</span>
                   <ChevronDown size={16} />
                 </Button>
               </DropdownMenuTrigger>
@@ -62,7 +77,7 @@ export const Navbar = () => {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => signOut()}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>

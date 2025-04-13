@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
@@ -25,8 +26,19 @@ export const SignUpForm = () => {
     return password.length >= minLength && hasLetter && hasNumber;
   };
 
+  const validateEmail = (email: string) => {
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateEmail(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
     
     if (!validatePassword(password)) {
       toast.error("Password must be at least 8 characters and include both letters and numbers");
@@ -44,6 +56,11 @@ export const SignUpForm = () => {
     }
     
     await signUp(email, password);
+  };
+
+  const handleGoogleSignIn = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    await signInWithGoogle();
   };
 
   return (
@@ -157,7 +174,7 @@ export const SignUpForm = () => {
           type="button"
           variant="outline"
           className="w-full"
-          onClick={signInWithGoogle}
+          onClick={handleGoogleSignIn}
           disabled={isLoading}
         >
           <svg className="mr-2 h-4 w-4" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -27,18 +27,18 @@ export const SignUpForm = () => {
   };
 
   const validateEmail = (email: string) => {
-    // More comprehensive email validation
-    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    return emailRegex.test(email) && 
-           email.length <= 254 && 
-           email.split('@')[0].length <= 64 && 
-           email.split('@')[1].length <= 253;
+    // Simple but effective email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email.trim());
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateEmail(email)) {
+    // Trim the email to remove any accidental spaces
+    const trimmedEmail = email.trim();
+    
+    if (!validateEmail(trimmedEmail)) {
       toast.error("Please enter a valid email address");
       return;
     }
@@ -58,7 +58,7 @@ export const SignUpForm = () => {
       return;
     }
     
-    await signUp(email, password);
+    await signUp(trimmedEmail, password);
   };
 
   const handleGoogleSignIn = async (e: React.MouseEvent) => {

@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   getUserProfile,
@@ -26,26 +26,26 @@ export const useProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (!user) return;
-      
-      setLoading(true);
-      try {
-        const data = await getUserProfile(user.id);
-        setProfile(data);
-        setError(null);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
+  const fetchProfile = useCallback(async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      const data = await getUserProfile(user.id);
+      setProfile(data);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
 
-  return { profile, loading, error };
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
+  return { profile, loading, error, refreshProfile: fetchProfile };
 };
 
 export const useBudgetCategories = () => {
@@ -54,26 +54,26 @@ export const useBudgetCategories = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      if (!user) return;
-      
-      setLoading(true);
-      try {
-        const data = await getBudgetCategories(user.id);
-        setCategories(data);
-        setError(null);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCategories();
+  const fetchCategories = useCallback(async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      const data = await getBudgetCategories(user.id);
+      setCategories(data);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
 
-  return { categories, loading, error };
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  return { categories, loading, error, refreshCategories: fetchCategories };
 };
 
 export const useFinancialGoals = () => {
@@ -82,26 +82,26 @@ export const useFinancialGoals = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchGoals = async () => {
-      if (!user) return;
-      
-      setLoading(true);
-      try {
-        const data = await getFinancialGoals(user.id);
-        setGoals(data);
-        setError(null);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchGoals();
+  const fetchGoals = useCallback(async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      const data = await getFinancialGoals(user.id);
+      setGoals(data);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
 
-  return { goals, loading, error };
+  useEffect(() => {
+    fetchGoals();
+  }, [fetchGoals]);
+
+  return { goals, loading, error, refreshGoals: fetchGoals };
 };
 
 export const useUserAlerts = () => {
@@ -110,26 +110,26 @@ export const useUserAlerts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchAlerts = async () => {
-      if (!user) return;
-      
-      setLoading(true);
-      try {
-        const data = await getUserAlerts(user.id);
-        setAlerts(data);
-        setError(null);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAlerts();
+  const fetchAlerts = useCallback(async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      const data = await getUserAlerts(user.id);
+      setAlerts(data);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
 
-  return { alerts, loading, error };
+  useEffect(() => {
+    fetchAlerts();
+  }, [fetchAlerts]);
+
+  return { alerts, loading, error, refreshAlerts: fetchAlerts };
 };
 
 export const useUserAccounts = () => {
@@ -138,26 +138,26 @@ export const useUserAccounts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchAccounts = async () => {
-      if (!user) return;
-      
-      setLoading(true);
-      try {
-        const data = await getUserAccounts(user.id);
-        setAccounts(data);
-        setError(null);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAccounts();
+  const fetchAccounts = useCallback(async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      const data = await getUserAccounts(user.id);
+      setAccounts(data);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
 
-  return { accounts, loading, error };
+  useEffect(() => {
+    fetchAccounts();
+  }, [fetchAccounts]);
+
+  return { accounts, loading, error, refreshAccounts: fetchAccounts };
 };
 
 export const useTransactions = (limit = 50) => {
@@ -166,26 +166,26 @@ export const useTransactions = (limit = 50) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      if (!user) return;
-      
-      setLoading(true);
-      try {
-        const data = await getTransactions(user.id, limit);
-        setTransactions(data);
-        setError(null);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTransactions();
+  const fetchTransactions = useCallback(async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    try {
+      const data = await getTransactions(user.id, limit);
+      setTransactions(data);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [user, limit]);
 
-  return { transactions, loading, error };
+  useEffect(() => {
+    fetchTransactions();
+  }, [fetchTransactions]);
+
+  return { transactions, loading, error, refreshTransactions: fetchTransactions };
 };
 
 export const useEducationalResources = (limit = 10) => {
@@ -193,22 +193,22 @@ export const useEducationalResources = (limit = 10) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchResources = async () => {
-      setLoading(true);
-      try {
-        const data = await getEducationalResources(limit);
-        setResources(data);
-        setError(null);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchResources();
+  const fetchResources = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await getEducationalResources(limit);
+      setResources(data);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [limit]);
 
-  return { resources, loading, error };
+  useEffect(() => {
+    fetchResources();
+  }, [fetchResources]);
+
+  return { resources, loading, error, refreshResources: fetchResources };
 };

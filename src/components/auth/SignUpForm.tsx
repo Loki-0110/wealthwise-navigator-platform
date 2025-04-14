@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail, FileLock, User } from "lucide-react";
 import { toast } from "sonner";
-import { validateEmail, validatePassword } from "./validation";
+import { validateEmail, validatePassword, validateFullName } from "./validation";
 import { FormInputField } from "./FormInputField";
 import { TermsCheckbox } from "./TermsCheckbox";
 import { GoogleSignInButton } from "./GoogleSignInButton";
@@ -22,16 +22,22 @@ export const SignUpForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Trim the email to remove any accidental spaces
+    // Trim the email and fullName to remove any accidental spaces
     const trimmedEmail = email.trim();
+    const trimmedFullName = fullName.trim();
     
     if (!validateEmail(trimmedEmail)) {
       toast.error("Please enter a valid email address");
       return;
     }
     
+    if (!validateFullName(trimmedFullName)) {
+      toast.error("Please enter your full name (first and last name)");
+      return;
+    }
+    
     if (!validatePassword(password)) {
-      toast.error("Password must be at least 8 characters and include both letters and numbers");
+      toast.error("Password must be at least 8 characters and include letters, numbers, and special characters");
       return;
     }
     
@@ -45,7 +51,12 @@ export const SignUpForm = () => {
       return;
     }
     
-    await signUp(trimmedEmail, password);
+    // Create user metadata with full name
+    const userMetadata = {
+      full_name: trimmedFullName
+    };
+    
+    await signUp(trimmedEmail, password, userMetadata);
   };
 
   const handleGoogleSignIn = async (e: React.MouseEvent) => {

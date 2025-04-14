@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
@@ -9,7 +8,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
-  signUp: (email: string, password: string) => Promise<{
+  signUp: (email: string, password: string, metadata?: Record<string, any>) => Promise<{
     error: any | null;
     data: any | null;
   }>;
@@ -26,6 +25,14 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const useBudget = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -55,13 +62,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, metadata?: Record<string, any>) => {
     setIsLoading(true);
     const result = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback`,
+        data: metadata || {}
       },
     });
     setIsLoading(false);
@@ -70,6 +78,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       toast.error(result.error.message);
     } else {
       toast.success("Verification email sent. Please check your inbox.");
+      
+      // Create user profile if sign up successful
+      if (result.data.user) {
+        try {
+          await supabase.from("user_profiles").insert({
+            user_id: result.data.user.id,
+            full_name: metadata?.full_name || ""
+          });
+        } catch (error) {
+          console.error("Error creating user profile", error);
+        }
+      }
     }
     
     return result;

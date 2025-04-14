@@ -77,7 +77,7 @@ const Home = () => {
             <div className="relative">
               <div className="absolute -top-12 -left-12 w-64 h-64 bg-finance-yellow opacity-20 rounded-full"></div>
               <img 
-                src="/Home.png" 
+                src="/placeholder.svg" 
                 alt="Finance Dashboard" 
                 className="rounded-2xl shadow-2xl border-4 border-white relative z-10"
               />

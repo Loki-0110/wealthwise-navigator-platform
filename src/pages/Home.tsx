@@ -77,9 +77,9 @@ const Home = () => {
             <div className="relative">
               <div className="absolute -top-12 -left-12 w-64 h-64 bg-finance-yellow opacity-20 rounded-full"></div>
               <img 
-                src="/Home.png" 
+                src="https://img.freepik.com/free-vector/gradient-stock-market-concept_23-2149166910.jpg"
                 alt="Finance Dashboard" 
-                className="rounded-2xl shadow-2xl border-4 border-white relative z-10"
+                className="rounded-2xl shadow-2xl border-4 border-white relative z-10 w-full h-auto"
               />
               <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-finance-blue opacity-20 rounded-full"></div>
             </div>

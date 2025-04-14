@@ -1,7 +1,6 @@
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { 
-  FinancialDataEntry, 
   BudgetCategory, 
   FinancialGoal, 
   UserAlert,
@@ -83,7 +82,7 @@ export const updateBudgetCategory = async (categoryId: string, updates: Partial<
   }
 };
 
-export const createBudgetCategory = async (category: Omit<BudgetCategory, 'id' | 'created_at' | 'updated_at'>) => {
+export const createBudgetCategory = async (category: Omit<BudgetCategory, 'id' | 'created_at'>) => {
   try {
     const { data, error } = await supabase
       .from('budget_categories')
@@ -145,7 +144,7 @@ export const getTransactions = async (userId: string, limit = 50) => {
       .from('transactions')
       .select('*')
       .eq('user_id', userId)
-      .order('date', { ascending: false })
+      .order('transaction_date', { ascending: false })
       .limit(limit);
       
     if (error) throw error;
@@ -180,7 +179,7 @@ export const addTransaction = async (transaction: Omit<Transaction, 'id' | 'crea
 export const getUserAlerts = async (userId: string) => {
   try {
     const { data, error } = await supabase
-      .from('user_alerts')
+      .from('alerts')
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
@@ -196,7 +195,7 @@ export const getUserAlerts = async (userId: string) => {
 export const dismissUserAlert = async (alertId: string) => {
   try {
     const { error } = await supabase
-      .from('user_alerts')
+      .from('alerts')
       .update({ read: true })
       .eq('id', alertId);
       
@@ -214,7 +213,7 @@ export const dismissUserAlert = async (alertId: string) => {
 export const getEducationalResources = async (limit = 10) => {
   try {
     const { data, error } = await supabase
-      .from('educational_resources')
+      .from('educational_content')
       .select('*')
       .limit(limit);
       
@@ -232,7 +231,7 @@ export const getEducationalResources = async (limit = 10) => {
 export const getUserAccounts = async (userId: string) => {
   try {
     const { data, error } = await supabase
-      .from('user_accounts')
+      .from('accounts')
       .select('*')
       .eq('user_id', userId);
       

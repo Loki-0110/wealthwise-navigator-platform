@@ -1,92 +1,86 @@
 
 // Define schema types for Supabase tables
-export type FinancialDataEntry = {
+export type UserProfile = {
   id: string;
   user_id: string;
-  category: string;
-  amount: number;
-  date: string;
-  description?: string;
+  full_name: string | null;
+  avatar_url?: string | null;
+  monthly_income?: number | null;
+  savings_goal_percent?: number | null;
+  theme_preference?: 'light' | 'dark' | null;
   created_at: string;
+  updated_at: string | null;
 };
 
 export type BudgetCategory = {
   id: string;
   user_id: string;
   name: string;
-  allocated: number;
-  spent: number;
-  icon: string;
-  color: string;
-  created_at: string;
-  updated_at: string;
+  monthly_limit: number;
+  color: string | null;
+  icon: string | null;
+  created_at: string | null;
 };
 
 export type FinancialGoal = {
   id: string;
   user_id: string;
-  name: string;
-  current: number;
-  target: number;
-  deadline: string;
-  icon: string;
-  color: string;
-  created_at: string;
-  updated_at: string;
+  title: string;
+  description: string | null;
+  target_amount: number;
+  current_amount: number | null;
+  target_date: string | null;
+  category: string;
+  completed: boolean | null;
+  priority: number | null;
+  created_at: string | null;
 };
 
 export type UserAlert = {
   id: string;
   user_id: string;
+  title: string;
   message: string;
-  severity: 'warning' | 'info' | 'success' | 'error';
-  read: boolean;
-  created_at: string;
-};
-
-export type UserProfile = {
-  id: string;
-  user_id: string;
-  full_name: string;
-  avatar_url?: string;
-  monthly_income?: number;
-  savings_goal_percent?: number;
-  theme_preference?: 'light' | 'dark';
-  created_at: string;
-  updated_at: string;
+  type: 'info' | 'warning' | 'critical';
+  read: boolean | null;
+  related_entity_id: string | null;
+  related_entity_type: string | null;
+  created_at: string | null;
 };
 
 export type EducationalResource = {
   id: string;
   title: string;
-  description: string;
-  content_type: 'article' | 'video' | 'course' | 'ebook';
-  url: string;
-  thumbnail_url?: string;
-  tags: string[];
-  created_at: string;
+  content: string;
+  category: string;
+  difficulty_level: 'beginner' | 'intermediate' | 'advanced';
+  tags: string[] | null;
+  thumbnail_url: string | null;
+  published: boolean | null;
+  author: string | null;
+  created_at: string | null;
 };
 
 export type UserAccount = {
   id: string;
   user_id: string;
   name: string;
-  type: 'checking' | 'savings' | 'investment' | 'credit' | 'loan';
+  account_type: string;
   balance: number;
-  institution: string;
-  last_updated: string;
-  created_at: string;
+  institution: string | null;
+  is_credit: boolean | null;
+  last_updated: string | null;
+  created_at: string | null;
 };
 
 export type Transaction = {
   id: string;
   user_id: string;
-  account_id: string;
-  category_id: string;
+  account_id: string | null;
+  category_id: string | null;
   amount: number;
-  date: string;
   description: string;
-  merchant?: string;
-  is_recurring: boolean;
-  created_at: string;
+  transaction_date: string;
+  transaction_type: 'income' | 'expense';
+  created_at: string | null;
 };

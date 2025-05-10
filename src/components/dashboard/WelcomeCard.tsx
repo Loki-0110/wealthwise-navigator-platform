@@ -5,6 +5,7 @@ import { ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useSupabaseData";
+import { isProfileComplete } from "@/utils/profileUtils";
 
 export const WelcomeCard = () => {
   const { user } = useAuth();
@@ -12,7 +13,7 @@ export const WelcomeCard = () => {
 
   const isReturningUser = !!user;
   const username = profile?.full_name || "there";
-  const hasCompletedProfile = profile?.monthly_income > 0;
+  const hasCompletedProfile = isProfileComplete(profile);
 
   return (
     <Card className="card-hover bg-gradient-to-br from-finance-blue-dark to-finance-blue text-white">

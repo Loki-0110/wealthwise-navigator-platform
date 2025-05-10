@@ -290,7 +290,7 @@ const Onboarding = () => {
           monthly_income: monthlyIncome,
           savings_goal_percent: savingsGoal,
           employment_status: employmentStatus,
-          expense_breakdown: expenseBreakdown,
+          expense_breakdown: expenseBreakdown, // This is now properly typed as JSONB
           financial_goals: activeGoals,
           risk_tolerance: riskTolerance
         })
@@ -363,6 +363,7 @@ const Onboarding = () => {
         description: error.message,
         variant: "destructive",
       });
+      console.error("Profile update error:", error);
     } finally {
       setLoading(false);
     }

@@ -247,9 +247,13 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string | null
+          employment_status: string | null
+          expense_breakdown: Json | null
+          financial_goals: string[] | null
           full_name: string | null
           id: string
           monthly_income: number | null
+          risk_tolerance: string | null
           savings_goal_percent: number | null
           theme_preference: string | null
           updated_at: string | null
@@ -258,9 +262,13 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string | null
+          employment_status?: string | null
+          expense_breakdown?: Json | null
+          financial_goals?: string[] | null
           full_name?: string | null
           id?: string
           monthly_income?: number | null
+          risk_tolerance?: string | null
           savings_goal_percent?: number | null
           theme_preference?: string | null
           updated_at?: string | null
@@ -269,9 +277,13 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string | null
+          employment_status?: string | null
+          expense_breakdown?: Json | null
+          financial_goals?: string[] | null
           full_name?: string | null
           id?: string
           monthly_income?: number | null
+          risk_tolerance?: string | null
           savings_goal_percent?: number | null
           theme_preference?: string | null
           updated_at?: string | null

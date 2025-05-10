@@ -9,13 +9,29 @@ import { BudgetGoals } from "@/components/budget/BudgetGoals";
 import { BudgetActions } from "@/components/budget/BudgetActions";
 import { BudgetRecommender } from "@/components/budget/BudgetRecommender";
 import { BudgetProvider } from "@/contexts/BudgetContext";
+import { useProfile } from "@/hooks/useSupabaseData";
 
 const Budget = () => {
+  const { profile } = useProfile();
+  
+  const getPersonalizedGreeting = () => {
+    if (!profile?.full_name) return "Budget Management";
+    
+    return `${profile.full_name}'s Budget`;
+  };
+  
   return (
     <Layout>
       <BudgetProvider>
         <div className="space-y-8 animate-fade-in">
-          <h1 className="text-2xl font-bold tracking-tight">Budget Management</h1>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <h1 className="text-2xl font-bold tracking-tight">{getPersonalizedGreeting()}</h1>
+            {profile?.monthly_income && (
+              <div className="text-sm text-gray-600">
+                Income: ${profile.monthly_income} | Target Savings: {profile.savings_goal_percent || 15}%
+              </div>
+            )}
+          </div>
           
           <BudgetActions />
           

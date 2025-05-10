@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,6 +29,40 @@ const Onboarding = () => {
   const [fullName, setFullName] = useState("");
   const [monthlyIncome, setMonthlyIncome] = useState(0);
   const [savingsGoal, setSavingsGoal] = useState(15); // Default 15%
+  
+  // Extended financial details
+  const [employmentStatus, setEmploymentStatus] = useState("full-time");
+  const [expenseBreakdown, setExpenseBreakdown] = useState({
+    housing: 30,
+    transportation: 15,
+    food: 15,
+    utilities: 10,
+    entertainment: 5,
+    other: 10
+  });
+  const [financialGoals, setFinancialGoals] = useState([
+    { goal: "emergency_fund", active: true },
+    { goal: "retirement", active: false },
+    { goal: "home_purchase", active: false },
+    { goal: "debt_payoff", active: false },
+    { goal: "vacation", active: false },
+  ]);
+  const [riskTolerance, setRiskTolerance] = useState("moderate");
+  
+  const updateExpenseBreakdown = (category: keyof typeof expenseBreakdown, value: number) => {
+    setExpenseBreakdown(prev => ({
+      ...prev,
+      [category]: value
+    }));
+  };
+  
+  const toggleFinancialGoal = (goalIndex: number) => {
+    setFinancialGoals(prev => 
+      prev.map((goal, index) => 
+        index === goalIndex ? { ...goal, active: !goal.active } : goal
+      )
+    );
+  };
 
   const steps: OnboardingStep[] = [
     {
@@ -58,6 +93,26 @@ const Onboarding = () => {
               onChange={(e) => setFullName(e.target.value)}
               className="w-full"
             />
+          </div>
+          
+          <div className="space-y-2 pt-2">
+            <Label htmlFor="employmentStatus">Employment Status</Label>
+            <Select 
+              value={employmentStatus} 
+              onValueChange={setEmploymentStatus}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select your employment status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="full-time">Full-time employed</SelectItem>
+                <SelectItem value="part-time">Part-time employed</SelectItem>
+                <SelectItem value="self-employed">Self-employed</SelectItem>
+                <SelectItem value="unemployed">Unemployed</SelectItem>
+                <SelectItem value="retired">Retired</SelectItem>
+                <SelectItem value="student">Student</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
       ),
@@ -96,6 +151,82 @@ const Onboarding = () => {
               <span>25%</span>
               <span>50%</span>
             </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Expense Allocation",
+      description: "How do you typically allocate your expenses?",
+      component: (
+        <div className="space-y-4 py-4">
+          {Object.entries(expenseBreakdown).map(([category, percentage]) => (
+            <div key={category} className="space-y-2">
+              <div className="flex justify-between">
+                <Label htmlFor={`expense-${category}`} className="capitalize">{category}</Label>
+                <span className="text-sm font-medium">{percentage}%</span>
+              </div>
+              <Slider 
+                id={`expense-${category}`}
+                defaultValue={[percentage]}
+                max={100}
+                step={1}
+                onValueChange={(values) => updateExpenseBreakdown(category as keyof typeof expenseBreakdown, values[0])}
+                className="w-full"
+              />
+            </div>
+          ))}
+          <p className="text-xs text-gray-500 pt-2">
+            Note: These percentages are estimates and should add up to around 85% (with ~15% for savings).
+          </p>
+        </div>
+      ),
+    },
+    {
+      title: "Financial Goals",
+      description: "What are your primary financial goals?",
+      component: (
+        <div className="space-y-4 py-4">
+          <div className="grid grid-cols-1 gap-3">
+            {financialGoals.map((goal, index) => (
+              <div 
+                key={goal.goal}
+                className={`p-3 border rounded-lg cursor-pointer flex items-center justify-between ${
+                  goal.active ? 'bg-finance-blue-light border-finance-blue-dark' : 'bg-gray-50 border-gray-200'
+                }`}
+                onClick={() => toggleFinancialGoal(index)}
+              >
+                <span className="capitalize">{goal.goal.replace('_', ' ')}</span>
+                <div className={`w-4 h-4 rounded-full ${goal.active ? 'bg-finance-blue-dark' : 'bg-gray-300'}`}></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Risk Profile",
+      description: "What's your approach to financial risk?",
+      component: (
+        <div className="space-y-4 py-4">
+          <Label>Select your risk tolerance level:</Label>
+          <div className="grid grid-cols-1 gap-3 mt-2">
+            {["conservative", "moderate", "aggressive"].map((risk) => (
+              <div 
+                key={risk}
+                className={`p-3 border rounded-lg cursor-pointer ${
+                  riskTolerance === risk ? 'bg-finance-blue-light border-finance-blue-dark' : 'bg-gray-50 border-gray-200'
+                }`}
+                onClick={() => setRiskTolerance(risk)}
+              >
+                <div className="font-medium capitalize">{risk}</div>
+                <div className="text-xs text-gray-600 mt-1">
+                  {risk === "conservative" && "Lower risk, stable returns, minimal volatility"}
+                  {risk === "moderate" && "Balanced risk and return, moderate volatility"}
+                  {risk === "aggressive" && "Higher risk, potential for higher returns, significant volatility"}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       ),
@@ -145,6 +276,12 @@ const Onboarding = () => {
 
     setLoading(true);
     try {
+      // Get active financial goals
+      const activeGoals = financialGoals
+        .filter(g => g.active)
+        .map(g => g.goal);
+      
+      // Save user profile data
       const { error } = await supabase
         .from('user_profiles')
         .upsert({
@@ -152,6 +289,10 @@ const Onboarding = () => {
           full_name: fullName,
           monthly_income: monthlyIncome,
           savings_goal_percent: savingsGoal,
+          employment_status: employmentStatus,
+          expense_breakdown: expenseBreakdown,
+          financial_goals: activeGoals,
+          risk_tolerance: riskTolerance
         })
         .select();
 
@@ -162,18 +303,60 @@ const Onboarding = () => {
         description: "Your profile has been successfully updated.",
       });
       
-      // Create default budget categories
-      const defaultCategories = [
-        { name: "Housing", monthly_limit: monthlyIncome * 0.3, color: "#2563eb", icon: "home", user_id: user.id },
-        { name: "Food", monthly_limit: monthlyIncome * 0.15, color: "#16a34a", icon: "utensils", user_id: user.id },
-        { name: "Transportation", monthly_limit: monthlyIncome * 0.15, color: "#ca8a04", icon: "car", user_id: user.id },
-        { name: "Entertainment", monthly_limit: monthlyIncome * 0.1, color: "#9333ea", icon: "film", user_id: user.id },
-        { name: "Utilities", monthly_limit: monthlyIncome * 0.1, color: "#dc2626", icon: "zap", user_id: user.id }
-      ];
+      // Create default budget categories based on expense breakdown
+      const categoryColors = {
+        housing: "bg-blue-600",
+        transportation: "bg-yellow-600",
+        food: "bg-green-600",
+        utilities: "bg-red-600",
+        entertainment: "bg-purple-600",
+        other: "bg-gray-600"
+      };
+      
+      const categoryIcons = {
+        housing: "home",
+        transportation: "car",
+        food: "utensils",
+        utilities: "zap",
+        entertainment: "film",
+        other: "package"
+      };
+      
+      const defaultCategories = Object.entries(expenseBreakdown).map(([category, percentage]) => ({
+        name: category.charAt(0).toUpperCase() + category.slice(1),
+        monthly_limit: monthlyIncome * (percentage / 100),
+        color: categoryColors[category as keyof typeof categoryColors],
+        icon: categoryIcons[category as keyof typeof categoryIcons],
+        user_id: user.id
+      }));
       
       await supabase.from('budget_categories').upsert(defaultCategories);
       
-      navigate("/");
+      // Create financial goals based on user selections
+      if (activeGoals.length > 0) {
+        const goalDefaults = {
+          emergency_fund: { target: monthlyIncome * 6, name: "Emergency Fund", category: "Savings" },
+          retirement: { target: monthlyIncome * 12 * 10, name: "Retirement Fund", category: "Investment" },
+          home_purchase: { target: monthlyIncome * 12 * 2, name: "Home Down Payment", category: "Savings" },
+          debt_payoff: { target: monthlyIncome * 6, name: "Debt Payoff", category: "Debt" },
+          vacation: { target: monthlyIncome * 3, name: "Vacation Fund", category: "Travel" }
+        };
+        
+        const goalEntries = activeGoals.map(goal => ({
+          user_id: user.id,
+          title: goalDefaults[goal as keyof typeof goalDefaults].name,
+          description: `Goal for ${goalDefaults[goal as keyof typeof goalDefaults].name}`,
+          target_amount: goalDefaults[goal as keyof typeof goalDefaults].target,
+          current_amount: 0,
+          target_date: new Date(new Date().setFullYear(new Date().getFullYear() + 3)).toISOString().split('T')[0],
+          category: goalDefaults[goal as keyof typeof goalDefaults].category,
+          priority: 1
+        }));
+        
+        await supabase.from('financial_goals').upsert(goalEntries);
+      }
+      
+      navigate("/dashboard");
     } catch (error: any) {
       toast({
         title: "Error saving profile",

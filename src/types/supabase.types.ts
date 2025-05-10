@@ -10,6 +10,10 @@ export type UserProfile = {
   theme_preference?: 'light' | 'dark' | null;
   created_at: string;
   updated_at: string | null;
+  employment_status?: 'full-time' | 'part-time' | 'self-employed' | 'unemployed' | 'retired' | 'student' | null;
+  expense_breakdown?: Record<string, number> | null;
+  financial_goals?: string[] | null;
+  risk_tolerance?: 'conservative' | 'moderate' | 'aggressive' | null;
 };
 
 export type BudgetCategory = {

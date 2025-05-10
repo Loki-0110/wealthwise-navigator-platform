@@ -1,8 +1,9 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ArrowDownIcon, ArrowUpIcon, TrendingUp } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, TrendingUp, PieChart } from "lucide-react";
 import { useBudget } from "@/contexts/BudgetContext";
+import { useProfile } from "@/hooks/useSupabaseData";
 
 export const BudgetOverview = () => {
   const { 
@@ -14,6 +15,13 @@ export const BudgetOverview = () => {
     savingsRate,
     currentMonth 
   } = useBudget();
+
+  const { profile } = useProfile();
+
+  // Calculate dynamic insights based on user profile
+  const userSavingsGoal = profile?.savings_goal_percent || savingsRate;
+  const savingsGapPercentage = userSavingsGoal - savingsRate;
+  const savingsStatus = savingsGapPercentage > 0 ? 'below' : 'above';
 
   return (
     <Card className="shadow-md">
@@ -52,8 +60,27 @@ export const BudgetOverview = () => {
                 <span className="text-lg font-semibold">{savingsRate}%</span>
                 <TrendingUp className="h-4 w-4 text-finance-blue-dark ml-2" />
               </div>
+              {profile && Math.abs(savingsGapPercentage) > 1 && (
+                <span className={`text-xs ${savingsGapPercentage > 0 ? 'text-red-500' : 'text-green-500'}`}>
+                  {Math.abs(savingsGapPercentage).toFixed(1)}% {savingsStatus} your {userSavingsGoal}% goal
+                </span>
+              )}
             </div>
           </div>
+          
+          {profile?.risk_tolerance && (
+            <div className="border-t pt-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Risk Profile</span>
+                <div className="flex items-center gap-1.5">
+                  <PieChart className="h-3.5 w-3.5 text-finance-blue-dark" />
+                  <span className="text-sm font-medium capitalize">
+                    {profile.risk_tolerance}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

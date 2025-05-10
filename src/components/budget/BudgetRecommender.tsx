@@ -1,19 +1,20 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Sparkles, CheckCircle2, BadgePercent } from "lucide-react";
 import { toast } from "sonner";
+import { useProfile } from "@/hooks/useSupabaseData";
 
 // Categories with recommended budget allocations based on income
 const budgetRecommendations = {
   conservative: {
     housing: 30,
-    food: 15,
+    food: 12,
     transportation: 10,
-    utilities: 10,
+    utilities: 8,
     healthcare: 10,
-    savings: 15,
+    savings: 20,
     personal: 5,
     entertainment: 5
   },
@@ -40,7 +41,11 @@ const budgetRecommendations = {
 };
 
 // ML algorithm to determine which budget model fits user's spending patterns
-const determineBudgetModel = (income: number, currentSpending: Record<string, number>) => {
+const determineBudgetModel = (income: number, currentSpending: Record<string, number>, riskTolerance: string = 'moderate') => {
+  // First consider user's risk tolerance if available
+  if (riskTolerance === 'conservative') return "conservative";
+  if (riskTolerance === 'aggressive') return "aggressive";
+  
   // Calculate total spending
   const totalSpending = Object.values(currentSpending).reduce((sum, val) => sum + val, 0);
   
@@ -48,7 +53,7 @@ const determineBudgetModel = (income: number, currentSpending: Record<string, nu
   const savingsRate = (income - totalSpending) / income * 100;
   
   // Housing percentage of income
-  const housingPercentage = (currentSpending.housing / income) * 100;
+  const housingPercentage = (currentSpending.housing || 0) / income * 100;
   
   // Determine the model based on financial metrics
   if (savingsRate >= 15 && housingPercentage <= 30) {
@@ -60,8 +65,8 @@ const determineBudgetModel = (income: number, currentSpending: Record<string, nu
   }
 };
 
-// Sample user financial data (in a real app, this would come from the user's actual data)
-const userData = {
+// Sample user financial data
+const sampleData = {
   monthlyIncome: 5000,
   currentSpending: {
     housing: 1750,
@@ -79,6 +84,25 @@ export const BudgetRecommender = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [recommendations, setRecommendations] = useState<Record<string, number> | null>(null);
   const [savingsOpportunity, setSavingsOpportunity] = useState(0);
+  const { profile } = useProfile();
+  
+  // Use real user profile data or fall back to sample data
+  const userData = React.useMemo(() => {
+    if (!profile?.monthly_income) return sampleData;
+    
+    const expenseBreakdown = profile.expense_breakdown || {};
+    const categoryMap: Record<string, number> = {};
+    
+    // Convert the expense breakdown percentages to dollar amounts
+    Object.entries(expenseBreakdown).forEach(([category, percentage]) => {
+      categoryMap[category] = (profile.monthly_income || 0) * (Number(percentage) / 100);
+    });
+    
+    return {
+      monthlyIncome: profile.monthly_income,
+      currentSpending: categoryMap
+    };
+  }, [profile]);
   
   const generateRecommendations = () => {
     setIsAnalyzing(true);
@@ -86,10 +110,11 @@ export const BudgetRecommender = () => {
     // Simulate ML processing delay
     setTimeout(() => {
       try {
-        // Determine which budget model fits the user
+        // Determine which budget model fits the user based on risk tolerance
         const recommendedModel = determineBudgetModel(
           userData.monthlyIncome,
-          userData.currentSpending
+          userData.currentSpending,
+          profile?.risk_tolerance
         );
         
         // Get the percentage allocations from the model
@@ -121,6 +146,13 @@ export const BudgetRecommender = () => {
       }
     }, 2000);
   };
+  
+  // Generate recommendations based on profile changes
+  useEffect(() => {
+    if (recommendations && profile?.monthly_income) {
+      generateRecommendations();
+    }
+  }, [profile?.monthly_income, profile?.risk_tolerance]);
 
   return (
     <Card>
@@ -128,11 +160,16 @@ export const BudgetRecommender = () => {
         <CardTitle className="text-lg flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-yellow-500" />
           AI Budget Recommendations
+          {profile?.risk_tolerance && (
+            <span className="text-xs font-normal text-gray-500 ml-2 capitalize">
+              Based on your {profile.risk_tolerance} risk profile
+            </span>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <p className="text-sm text-gray-600 mb-4">
-          Our intelligent algorithm analyzes your spending patterns and income to recommend an optimal budget allocation.
+          Our intelligent algorithm analyzes your spending patterns, income, and risk tolerance to recommend an optimal budget allocation.
         </p>
         
         {!recommendations ? (

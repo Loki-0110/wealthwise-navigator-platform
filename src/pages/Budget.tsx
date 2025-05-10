@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Layout } from "@/components/layout/Layout";
 import { BudgetOverview } from "@/components/budget/BudgetOverview";
 import { BudgetCategories } from "@/components/budget/BudgetCategories";
@@ -7,6 +7,7 @@ import { MonthlyBudgetChart } from "@/components/budget/MonthlyBudgetChart";
 import { BudgetAlerts } from "@/components/budget/BudgetAlerts";
 import { BudgetGoals } from "@/components/budget/BudgetGoals";
 import { BudgetActions } from "@/components/budget/BudgetActions";
+import { BudgetRecommender } from "@/components/budget/BudgetRecommender";
 import { BudgetProvider } from "@/contexts/BudgetContext";
 
 const Budget = () => {
@@ -26,6 +27,9 @@ const Budget = () => {
               <BudgetAlerts />
             </div>
           </div>
+          
+          {/* Add the ML-based budget recommender */}
+          <BudgetRecommender />
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <MonthlyBudgetChart />

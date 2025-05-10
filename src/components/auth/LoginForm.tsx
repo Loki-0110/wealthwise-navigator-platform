@@ -1,20 +1,46 @@
+
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, FileLock } from "lucide-react";
+import { Mail, FileLock, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
+import { validateEmail } from "./validation";
 
 export const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [formError, setFormError] = useState("");
   const { signIn, signInWithGoogle, isLoading } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await signIn(email, password);
+    setFormError("");
+    
+    // Basic validation
+    if (!validateEmail(email.trim())) {
+      setFormError("Please enter a valid email address");
+      return;
+    }
+    
+    if (!password || password.length < 6) {
+      setFormError("Please enter a valid password (at least 6 characters)");
+      return;
+    }
+    
+    const result = await signIn(email.trim(), password);
+    
+    if (!result.error && result.data?.user) {
+      navigate("/dashboard");
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    await signInWithGoogle();
   };
 
   return (
@@ -26,6 +52,13 @@ export const LoginForm = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {formError && (
+          <div className="bg-red-50 p-3 rounded-md mb-4 flex items-start gap-2">
+            <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-red-600">{formError}</p>
+          </div>
+        )}
+        
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -67,7 +100,12 @@ export const LoginForm = () => {
             className="w-full bg-finance-blue-dark hover:bg-finance-blue"
             disabled={isLoading}
           >
-            {isLoading ? "Signing in..." : "Sign in"}
+            {isLoading ? (
+              <div className="flex items-center">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                <span>Signing in...</span>
+              </div>
+            ) : "Sign in"}
           </Button>
         </form>
         
@@ -84,7 +122,7 @@ export const LoginForm = () => {
           type="button"
           variant="outline"
           className="w-full"
-          onClick={signInWithGoogle}
+          onClick={handleGoogleSignIn}
           disabled={isLoading}
         >
           <svg className="mr-2 h-4 w-4" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -13,6 +13,16 @@ export const AuthCallback = () => {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
+        // Surface any provider error messages passed via URL
+        const hashParams = new URLSearchParams(window.location.hash.replace('#',''));
+        const searchParams = new URLSearchParams(window.location.search);
+        const providerError = hashParams.get('error_description') || searchParams.get('error_description') || searchParams.get('error');
+        if (providerError) {
+          setError(providerError);
+          toast.error(`Authentication error: ${providerError}`);
+          setIsProcessing(false);
+          return;
+        }
         // Handling the hash fragment if it exists (OAuth providers typically use hash fragments)
         if (window.location.hash) {
           const { data, error } = await supabase.auth.getSession();

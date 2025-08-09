@@ -43,6 +43,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Ensure there's a profile row for the authenticated user
+  const ensureUserProfile = async (u: User) => {
+    try {
+      const { data: existing, error: selectError } = await supabase
+        .from("user_profiles")
+        .select("user_id")
+        .eq("user_id", u.id)
+        .maybeSingle();
+
+      if (selectError) {
+        console.warn("Profile check error:", selectError);
+        return;
+      }
+
+      if (!existing) {
+        const fullName =
+          (u.user_metadata?.full_name as string) ||
+          (u.user_metadata?.name as string) ||
+          "";
+        const { error: insertError } = await supabase
+          .from("user_profiles")
+          .insert({ user_id: u.id, full_name: fullName });
+        if (insertError) {
+          console.warn("Profile insert error:", insertError);
+        }
+      }
+    } catch (e) {
+      console.error("ensureUserProfile failed:", e);
+    }
+  };
+
   useEffect(() => {
     // Set up auth state listener FIRST to avoid missing auth events
     const {
@@ -51,6 +82,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setSession(session);
       setUser(session?.user || null);
       setIsLoading(false);
+      if (session?.user) {
+        setTimeout(() => {
+          ensureUserProfile(session.user as User);
+        }, 0);
+      }
     });
 
     // THEN check for existing session

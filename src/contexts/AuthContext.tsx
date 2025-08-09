@@ -102,34 +102,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const signUp = async (email: string, password: string, metadata?: Record<string, any>) => {
     setIsLoading(true);
     try {
-      const result = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-          data: metadata || {}
+      // Use Edge Function to create a confirmed user and return JWT immediately
+      const { data, error } = await supabase.functions.invoke("auth-signup", {
+        body: {
+          email,
+          password,
+          full_name: metadata?.full_name || "",
         },
       });
-      
-      if (result.error) {
-        toast.error(result.error.message);
-      } else {
-        toast.success("Verification email sent. Please check your inbox.");
-        
-        // Create user profile if sign up successful
-        if (result.data.user) {
-          try {
-            await supabase.from("user_profiles").insert({
-              user_id: result.data.user.id,
-              full_name: metadata?.full_name || ""
-            });
-          } catch (error) {
-            console.error("Error creating user profile", error);
-          }
-        }
+
+      if (error) {
+        toast.error(error.message || "Failed to sign up");
+        return { error, data: null };
       }
-      
-      return result;
+
+      if (data?.session?.access_token && data?.session?.refresh_token) {
+        const { error: setErr } = await supabase.auth.setSession({
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+        });
+
+        if (setErr) {
+          toast.error(setErr.message || "Failed to start session");
+          return { error: setErr, data: null };
+        }
+
+        toast.success("Account created! You're now signed in.");
+        navigate("/dashboard");
+        return { error: null, data };
+      }
+
+      toast.error("Unexpected signup response");
+      return { error: new Error("Unexpected signup response"), data: null };
     } catch (error: any) {
       toast.error(error.message || "An error occurred during sign up");
       return { error, data: null };
@@ -141,19 +145,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const result = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const { data, error } = await supabase.functions.invoke("auth-login", {
+        body: { email, password },
       });
-      
-      if (result.error) {
-        toast.error(result.error.message);
-      } else {
+
+      if (error) {
+        toast.error(error.message || "Failed to sign in");
+        return { error, data: null };
+      }
+
+      if (data?.session?.access_token && data?.session?.refresh_token) {
+        const { error: setErr } = await supabase.auth.setSession({
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+        });
+
+        if (setErr) {
+          toast.error(setErr.message || "Failed to start session");
+          return { error: setErr, data: null };
+        }
+
         toast.success("Successfully signed in!");
         navigate("/dashboard");
+        return { error: null, data };
       }
-      
-      return result;
+
+      toast.error("Unexpected sign-in response");
+      return { error: new Error("Unexpected sign-in response"), data: null };
     } catch (error: any) {
       toast.error(error.message || "An error occurred during sign in");
       return { error, data: null };

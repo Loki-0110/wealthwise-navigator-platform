@@ -61,8 +61,8 @@ export const SignUpForm = () => {
     const result = await signUp(trimmedEmail, password, userMetadata);
     
     if (!result.error && result.data?.user) {
-      // For development/testing purposes - in production, users would need to verify email
-      navigate("/login");
+      // AuthContext handles session + redirect to dashboard
+      return;
     }
   };
 

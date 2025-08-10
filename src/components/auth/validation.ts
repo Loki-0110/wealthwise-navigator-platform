@@ -2,9 +2,17 @@
 /**
  * Email validation function using a simple but reliable regex
  */
+export const sanitizeEmail = (email: string): string => {
+  return email
+    .trim()
+    .replace(/[\u200B-\u200D\u2060\u00A0]/g, "") // remove zero-width & NBSP
+    .replace(/^[<"'`]+|[>"'`]+$/g, ""); // strip surrounding quotes/brackets
+};
+
 export const validateEmail = (email: string): boolean => {
+  const cleaned = sanitizeEmail(email).toLowerCase();
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email.trim());
+  return emailRegex.test(cleaned);
 };
 
 /**

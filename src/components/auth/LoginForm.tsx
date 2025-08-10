@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail, FileLock, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
-import { validateEmail } from "./validation";
+import { validateEmail, sanitizeEmail } from "./validation";
 
 export const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -22,7 +22,11 @@ export const LoginForm = () => {
     setFormError("");
     
     // Basic validation
-    if (!validateEmail(email.trim())) {
+    const trimmedEmail = email.trim();
+    const sanitized = sanitizeEmail(trimmedEmail);
+    if (sanitized !== email) setEmail(sanitized);
+
+    if (!validateEmail(sanitized)) {
       setFormError("Please enter a valid email address");
       return;
     }
@@ -32,7 +36,7 @@ export const LoginForm = () => {
       return;
     }
     
-    const result = await signIn(email.trim(), password);
+    const result = await signIn(sanitized, password);
     if (!result.error && result.data?.user) {
       return;
     }

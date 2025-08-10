@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail, FileLock, User, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
-import { validateEmail, validatePassword, validateFullName } from "./validation";
+import { validateEmail, validatePassword, validateFullName, sanitizeEmail } from "./validation";
 import { FormInputField } from "./FormInputField";
 import { TermsCheckbox } from "./TermsCheckbox";
 
@@ -24,11 +24,15 @@ export const SignUpForm = () => {
     e.preventDefault();
     setFormError("");
     
-    // Trim the email and fullName to remove any accidental spaces
+    // Trim and sanitize inputs
     const trimmedEmail = email.trim();
+    const sanitizedEmail = sanitizeEmail(trimmedEmail);
     const trimmedFullName = fullName.trim();
+
+    // Reflect sanitized email back into the field if it changed
+    if (sanitizedEmail !== email) setEmail(sanitizedEmail);
     
-    if (!validateEmail(trimmedEmail)) {
+    if (!validateEmail(sanitizedEmail)) {
       setFormError("Please enter a valid email address");
       return;
     }
@@ -58,7 +62,7 @@ export const SignUpForm = () => {
       full_name: trimmedFullName
     };
     
-    const result = await signUp(trimmedEmail, password, userMetadata);
+    const result = await signUp(sanitizedEmail, password, userMetadata);
     
     if (!result.error && result.data?.user) {
       // AuthContext handles session + redirect to dashboard

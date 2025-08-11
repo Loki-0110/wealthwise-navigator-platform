@@ -64,9 +64,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           "";
         const { error: insertError } = await supabase
           .from("user_profiles")
-          .insert({ user_id: u.id, full_name: fullName });
+          .upsert({ user_id: u.id, full_name: fullName }, { onConflict: "user_id" });
         if (insertError) {
-          console.warn("Profile insert error:", insertError);
+          console.warn("Profile upsert error:", insertError);
         }
       }
     } catch (e) {

@@ -284,16 +284,19 @@ const Onboarding = () => {
       // Save user profile data
       const { error } = await supabase
         .from('user_profiles')
-        .upsert({
-          user_id: user.id,
-          full_name: fullName,
-          monthly_income: monthlyIncome,
-          savings_goal_percent: savingsGoal,
-          employment_status: employmentStatus,
-          expense_breakdown: expenseBreakdown, // This is now properly typed as JSONB
-          financial_goals: activeGoals,
-          risk_tolerance: riskTolerance
-        })
+        .upsert(
+          {
+            user_id: user.id,
+            full_name: fullName,
+            monthly_income: monthlyIncome,
+            savings_goal_percent: savingsGoal,
+            employment_status: employmentStatus,
+            expense_breakdown: expenseBreakdown, // JSONB
+            financial_goals: activeGoals,
+            risk_tolerance: riskTolerance
+          },
+          { onConflict: 'user_id' }
+        )
         .select();
 
       if (error) throw error;

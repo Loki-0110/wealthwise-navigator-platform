@@ -62,11 +62,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           (u.user_metadata?.full_name as string) ||
           (u.user_metadata?.name as string) ||
           "";
-        const { error: insertError } = await supabase
+        // Check if profile exists before inserting to avoid unique violation
+        const { data: existingProfile, error: checkErr } = await supabase
           .from("user_profiles")
-          .upsert({ user_id: u.id, full_name: fullName }, { onConflict: "user_id" });
-        if (insertError) {
-          console.warn("Profile upsert error:", insertError);
+          .select("user_id")
+          .eq("user_id", u.id)
+          .maybeSingle();
+        if (checkErr) {
+          console.warn("Profile check error:", checkErr);
+          return;
+        }
+        if (!existingProfile) {
+          const { error: insertError } = await supabase
+            .from("user_profiles")
+            .insert({ user_id: u.id, full_name: fullName });
+          if (insertError) {
+            // Ignore duplicate key error from race conditions
+            if (!String(insertError.message).toLowerCase().includes("duplicate key")) {
+              console.warn("Profile insert error:", insertError);
+            }
+          }
         }
       }
     } catch (e) {

@@ -282,24 +282,35 @@ const Onboarding = () => {
         .map(g => g.goal);
       
       // Save user profile data
-      const { error } = await supabase
+      // Update profile if exists; otherwise insert (avoids unique constraint violation)
+      const profilePayload = {
+        full_name: fullName,
+        monthly_income: monthlyIncome,
+        savings_goal_percent: savingsGoal,
+        employment_status: employmentStatus,
+        expense_breakdown: expenseBreakdown, // JSONB
+        financial_goals: activeGoals,
+        risk_tolerance: riskTolerance
+      };
+
+      const { data: updated, error: updateErr } = await supabase
         .from('user_profiles')
-        .upsert(
-          {
-            user_id: user.id,
-            full_name: fullName,
-            monthly_income: monthlyIncome,
-            savings_goal_percent: savingsGoal,
-            employment_status: employmentStatus,
-            expense_breakdown: expenseBreakdown, // JSONB
-            financial_goals: activeGoals,
-            risk_tolerance: riskTolerance
-          },
-          { onConflict: 'user_id' }
-        )
+        .update(profilePayload)
+        .eq('user_id', user.id)
         .select();
 
-      if (error) throw error;
+      if (updateErr) throw updateErr;
+
+      if (!updated || updated.length === 0) {
+        const { error: insertErr } = await supabase
+          .from('user_profiles')
+          .insert({ user_id: user.id, ...profilePayload });
+        if (insertErr && !String(insertErr.message).toLowerCase().includes('duplicate key')) {
+          throw insertErr;
+        }
+      }
+
+      
 
       toast({
         title: "Setup complete!",

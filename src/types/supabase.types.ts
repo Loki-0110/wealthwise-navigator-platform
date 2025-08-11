@@ -7,13 +7,13 @@ export type UserProfile = {
   avatar_url?: string | null;
   monthly_income?: number | null;
   savings_goal_percent?: number | null;
-  theme_preference?: 'light' | 'dark' | null;
+  theme_preference?: string | null;
   created_at: string;
   updated_at: string | null;
-  employment_status?: 'full-time' | 'part-time' | 'self-employed' | 'unemployed' | 'retired' | 'student' | null;
-  expense_breakdown?: Record<string, number> | null;
+  employment_status?: string | null;
+  expense_breakdown?: any | null;
   financial_goals?: string[] | null;
-  risk_tolerance?: 'conservative' | 'moderate' | 'aggressive' | null;
+  risk_tolerance?: string | null;
 };
 
 export type BudgetCategory = {
@@ -45,7 +45,7 @@ export type UserAlert = {
   user_id: string;
   title: string;
   message: string;
-  type: 'info' | 'warning' | 'critical';
+  type: string;
   read: boolean | null;
   related_entity_id: string | null;
   related_entity_type: string | null;
@@ -57,7 +57,7 @@ export type EducationalResource = {
   title: string;
   content: string;
   category: string;
-  difficulty_level: 'beginner' | 'intermediate' | 'advanced';
+  difficulty_level: string;
   tags: string[] | null;
   thumbnail_url: string | null;
   published: boolean | null;
@@ -85,6 +85,6 @@ export type Transaction = {
   amount: number;
   description: string;
   transaction_date: string;
-  transaction_type: 'income' | 'expense';
+  transaction_type: string;
   created_at: string | null;
 };

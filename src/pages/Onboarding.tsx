@@ -92,6 +92,7 @@ const Onboarding = () => {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               className="w-full"
+              maxLength={100}
             />
           </div>
           
@@ -129,8 +130,15 @@ const Onboarding = () => {
               type="number" 
               placeholder="5000" 
               value={monthlyIncome || ""}
-              onChange={(e) => setMonthlyIncome(Number(e.target.value))}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                if (value >= 0 && value <= 10000000) {
+                  setMonthlyIncome(value);
+                }
+              }}
               className="w-full"
+              min={0}
+              max={10000000}
             />
           </div>
           <div className="space-y-2 pt-4">
@@ -274,6 +282,35 @@ const Onboarding = () => {
       return;
     }
 
+    // Input validation
+    const trimmedFullName = fullName.trim();
+    if (!trimmedFullName || trimmedFullName.length > 100) {
+      toast({
+        title: "Invalid name",
+        description: "Name must be between 1 and 100 characters",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (monthlyIncome < 0 || monthlyIncome > 10000000) {
+      toast({
+        title: "Invalid income",
+        description: "Monthly income must be between $0 and $10,000,000",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (savingsGoal < 0 || savingsGoal > 100) {
+      toast({
+        title: "Invalid savings goal",
+        description: "Savings goal must be between 0% and 100%",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       // Get active financial goals
@@ -288,7 +325,7 @@ const Onboarding = () => {
         .upsert(
           {
             user_id: user.id,
-            full_name: fullName,
+            full_name: trimmedFullName,
             monthly_income: monthlyIncome,
             savings_goal_percent: savingsGoal,
             employment_status: employmentStatus,
